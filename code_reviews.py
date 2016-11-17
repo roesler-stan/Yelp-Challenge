@@ -29,13 +29,17 @@ def code_themes(df):
     pt.print_time()
 
     # Concept to look for and its regular expression
-    regex_dict = {'service': '(^|\W)(service|server|waiter|waitress|staff|employee|manager|worker|busboy|owner|deliver|cashier|proff?ess?ional|rude|polite|friendly|courteous)',
-    'speed': '(^|\W)(speed|fast|slow|time|wait|minute|hour)',
+    # excluding "nice" b/c so common
+    # excluding "owner" b/c often about other things, also excluding bartender b/c about drinks
+    regex_dict = {'service': '(^|\W)(service|server|waiter|waitress|staff|host(ess)?\W|employee|manager|worker|busboy|' + \
+    'cashier|proff?ess?ional|rude|polite|friendly|courteous|speed|fast|slow|time|wait|minute|hour|while|immediate|quick|' + \
+    '(?<=mess up) order|(?<=screw up) order|order (right|wrong))',
+    'speed': '(^|\W)(speed|fast|slow|time|wait|minute|hour|immediate|while|quick)',
     'food': '(^|\W)(food|meal|ingredients|fresh|tast|delicious|flavou?r|yum)',
     'good': '(^|\W)(good|great|excellent|well|amazing|fantastic|super|better)',
     'bad': '(^|\W)(bad|horribl|awful|terribl|atrocious|worse|worst|unacceptabl|outrageous)',
     'size': 'size|portion|big|small|tiny|large|huge|enormous',
-    'money': '((^|\W)(cheap|expensive|deal|charg|bucks?($|\W))|afford)|price|\$|dollar|money', # dough is ambiguous
+    'money': '(^|\W)(cheap|expensive|deals?|bucks?|afford|spen(d|t)|charg|price|\$|dollar|money)', # dough is ambiguous
     'food_poisoning': '(^|\W)(poison|diarr?h|diarr?ea|sick(?! of )|puke|throw up|vomit)',
     'cleanliness': '(^|\W)(clean|dirty|filthy)',
     'atmosphere': '(^|\W)(atmosphere|mood|music|loud|quiet|ambience|seating|busy)'}

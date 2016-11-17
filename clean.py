@@ -10,6 +10,7 @@ def main():
     # For some reason, it has to be index=True
     df.to_csv(outfile, index = True, quoting = csv.QUOTE_MINIMAL, quotechar = '"')
 
+    # Hand-code this later and rename reviews_training.csv
     df[['review_id', 'text']][: 1000].to_csv('../Data/reviews_only_small.csv', index = False)
     df[['review_id', 'text']].to_csv('../Data/reviews_only.csv', index = False)
 
