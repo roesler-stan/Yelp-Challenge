@@ -1,6 +1,9 @@
 import re
 from textblob import TextBlob
 import print_time as pt
+import nltk
+from nltk import wordpunct_tokenize
+from nltk.corpus import stopwords
 
 def categories(df):
     """ Code the category for ethnicities of interest and remove all other restaurants, assumes that ethnicities don't overlap """
@@ -17,7 +20,7 @@ def categories(df):
     df = df[df['category'].notnull()]
     return df
 
-def code_themes(df):
+def themes(df):
     """ Create column with word count for each review
     I consider "service" an explicit mention of service, not complaints about waits.
     I consider "money" an explicit mention of money, not portion sizes, happy hours, or specials
@@ -63,5 +66,32 @@ def code_themes(df):
     df['polarity'] = df['text'].apply(lambda x: TextBlob(x).sentiment.polarity)
     print 'done with polarity coding'
     pt.print_time()
+
+    return df
+
+def languages(df):
+    def review_lang(review):
+        languages_ratios = {}
+        tokens = wordpunct_tokenize(review)
+        words = [word.lower() for word in tokens]
+
+        for language in stopwords.fileids():
+            stopwords_set = set(stopwords.words(language))
+            words_set = set(words)
+            common_elements = words_set.intersection(stopwords_set)
+            languages_ratios[language] = len(common_elements) # language "score"
+
+        language = max(languages_ratios, key=languages_ratios.get)
+        lang_stopwords = languages_ratios[language]
+        # If there are less than 3 stop words to go on, assume it's English
+        if lang_stopwords < 3:
+            return 'english'
+
+        return language
+
+    df['language'] = df['text'].map(review_lang)
+
+    # Only keep English-language reviews
+    df = df[df['language'] == 'english']
 
     return df

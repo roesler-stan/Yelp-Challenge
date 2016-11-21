@@ -1,4 +1,7 @@
 import pandas as pd
+from matplotlib import rcParams
+rcParams['font.family'] = 'sans-serif'
+rcParams['font.sans-serif'] = ['Verdana']
 from matplotlib import pyplot as plt
 from matplotlib_venn import venn3
 
@@ -32,7 +35,18 @@ def plot_venn(df, outfile, cols):
 	subset_sizes = [food, service, food_and_service, money, food_and_money, service_and_money, all_three]
 	subset_sizes = [n + 1 if n == 0 else n for n in subset_sizes]
 	v = venn3(subsets = subset_sizes, set_labels = ('Food', 'Service', 'Money'))
-	plt.title("Topics Mentioned", fontsize=14)
+
+	for text in v.set_labels:
+	    text.set_fontsize(18)
+
+	subsets = ['001', '010', '100', '110', '101', '111', '011']
+	for subset in subsets:
+		try:
+			label = v.get_label_by_id(subset)
+			label.set_fontsize(14)
+		except: pass
+
+	plt.title("Topics Mentioned", fontsize=20)
 	plt.savefig(outfile)
 	plt.close()
 

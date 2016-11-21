@@ -45,7 +45,8 @@ def clean_data(df):
     # Decode non-Ascii text
     df['text'] = df['text'].str.decode('unicode_escape', errors = 'ignore').str.encode('ascii', errors = 'ignore')
     df = cr.categories(df)
-    df = cr.code_themes(df)
+    df = cr.themes(df)
+    df = cr.languages(df)
 
     # Shuffle the data, using the same seed to be able to keep track of the data
     np.random.seed(72)
