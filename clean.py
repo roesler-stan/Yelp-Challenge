@@ -4,15 +4,18 @@ import code_reviews as cr
 import csv
 
 def main():
-    outfile = '../Data/reviews_clean.csv'
+    out_dir = '../Data/'
+    food_file = out_dir + 'food.csv'
+    outfile = out_dir + 'reviews_clean.csv'
+    labeling_file = out_dir + 'reviews_only_small.csv'
+
     df = read_data()
-    df = clean_data(df)
+    df = clean_data(df, food_file)
     # For some reason, it has to be index=True
     df.to_csv(outfile, index = True, quoting = csv.QUOTE_MINIMAL, quotechar = '"')
 
-    # Hand-code this later and rename reviews_training.csv
-    df[['review_id', 'text']][: 1000].to_csv('../Data/reviews_only_small.csv', index = False)
-    df[['review_id', 'text']].to_csv('../Data/reviews_only.csv', index = False)
+    # Hand-code this later and rename reviews_labeled.csv
+    df[['review_id', 'text']][: 1000].to_csv(labeling_file, index = False)
 
 def read_data():
     filename_base = '../Data/input/yelp_academic_dataset'
@@ -32,7 +35,7 @@ def read_data():
 
     return df
 
-def clean_data(df):
+def clean_data(df, food_file):
     # Only include restaurants
     df = df[df['categories'].str.contains('restaurant', case = False, na = False)]
 
@@ -45,7 +48,7 @@ def clean_data(df):
     # Decode non-Ascii text
     df['text'] = df['text'].str.decode('unicode_escape', errors = 'ignore').str.encode('ascii', errors = 'ignore')
     df = cr.categories(df)
-    df = cr.themes(df)
+    df = cr.themes(df, food_file)
     df = cr.languages(df)
 
     # Shuffle the data, using the same seed to be able to keep track of the data

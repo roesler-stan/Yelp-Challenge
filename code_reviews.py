@@ -1,14 +1,15 @@
 import re
 from textblob import TextBlob
-import print_time as pt
 import nltk
 from nltk import wordpunct_tokenize
 from nltk.corpus import stopwords
+import pandas as pd
+import datetime
 
 def categories(df):
     """ Code the category for ethnicities of interest and remove all other restaurants, assumes that ethnicities don't overlap """
     print 'going to code categories'
-    pt.print_time()
+    print_time()
 
     ethnicities = ['Mexican', 'Italian', 'American']
     df['num_categories'] = 0
@@ -20,7 +21,7 @@ def categories(df):
     df = df[df['category'].notnull()]
     return df
 
-def themes(df):
+def themes(df, food_file):
     """ Create column with word count for each review
     I consider "service" an explicit mention of service, not complaints about waits.
     I consider "money" an explicit mention of money, not portion sizes, happy hours, or specials
@@ -29,7 +30,7 @@ def themes(df):
         Check for particular server names
     """
     print 'going to code themes'
-    pt.print_time()
+    print_time()
 
     # Concept to look for and its regular expression
     # excluding "nice" b/c so common
@@ -38,34 +39,37 @@ def themes(df):
     'cashier|proff?ess?ional|rude|polite|friendly|courteous|speed|fast|slow|time|wait|minute|hour|while|immediate|quick|' + \
     '(?<=mess up) order|(?<=screw up) order|order (right|wrong))',
     'speed': '(^|\W)(speed|fast|slow|time|wait|minute|hour|immediate|while|quick)',
-    'food': '(^|\W)(food|meal|ingredients|fresh|tast|delicious|flavou?r|yum)',
     'good': '(^|\W)(good|great|excellent|well|amazing|fantastic|super|better)',
     'bad': '(^|\W)(bad|horribl|awful|terribl|atrocious|worse|worst|unacceptabl|outrageous)',
     'size': 'size|portion|big|small|tiny|large|huge|enormous',
-    'money': '(^|\W)(cheap|expensive|deals?|bucks?|afford|spen(d|t)|charg|price|\$|dollar|money)', # dough is ambiguous
+    'money': '(^|\W)(cheap|expensive|deals?|bucks?|afford|spen(d|t)|charg|price|\$|dollar|money|free|cost)', # dough is ambiguous
     'food_poisoning': '(^|\W)(poison|diarr?h|diarr?ea|sick(?! of )|puke|throw up|vomit)',
     'cleanliness': '(^|\W)(clean|dirty|filthy)',
     'atmosphere': '(^|\W)(atmosphere|mood|music|loud|quiet|ambience|seating|busy)'}
+
+    food_df = pd.read_csv(food_file, header=None, names=['word'])
+    food_words = food_df['word'].tolist()
+    regex_dict['food'] = '(^|\W)(food|meal|ingredients|fresh|tast|delicious|flavou?r|yum|burger|fries|' + '|'.join(food_words) + ')'
 
     # \S matches non-whitespace, so this counts the number of multiple non-whitespace groups: words
     df['word_count'] = df['text'].str.count('\S+', flags = re.I)
     df['characters_count'] = df['text'].str.len()
 
     print 'done with word and characters count'
-    pt.print_time()
+    print_time()
 
     for var, regex in regex_dict.items():
         print 'starting ' + var + ' theme'
-        pt.print_time()
+        print_time()
         df[var + '_present'] = df['text'].str.contains(regex, flags = re.I, na=False).astype(float)
         df[var + '_count'] = df['text'].str.count(regex, flags = re.I)
 
     print 'done with theme coding'
-    pt.print_time()
+    print_time()
 
     df['polarity'] = df['text'].apply(lambda x: TextBlob(x).sentiment.polarity)
     print 'done with polarity coding'
-    pt.print_time()
+    print_time()
 
     return df
 
@@ -95,3 +99,6 @@ def languages(df):
     df = df[df['language'] == 'english']
 
     return df
+
+def print_time():
+    print str(datetime.datetime.now().hour) + ':' + str(datetime.datetime.now().minute) + ':' + str(datetime.datetime.now().second)

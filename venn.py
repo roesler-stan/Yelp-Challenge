@@ -11,7 +11,7 @@ def main():
 	outfile_training = '../Output/venn_labeled.png'
 	outfile_measures = '../Output/venn_measures.png'
 	
-	cols_pred = ['food_pred_logit', 'service_pred_logit', 'money_pred_logit']
+	cols_pred = ['food_pred_nbayes', 'service_pred_nbayes', 'money_pred_nbayes']
 	cols_labeled = ['food', 'service', 'money']
 	cols_measures = ['food_present', 'service_present', 'money_present']
 

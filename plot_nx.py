@@ -46,7 +46,7 @@ def generate_colors():
 def generate_graph(infile):
     G = nx.read_weighted_edgelist(infile, delimiter=",")
 
-    # Top 30 and top 70 weighted edges
+    # Top 30, 100, and 200 weighted edges
     top_30 = (1 - (30.0 / len(G.edges()))) * 100
     top_100 = (1 - (100.0 / len(G.edges()))) * 100
     top_200 = (1 - (200.0 / len(G.edges()))) * 100

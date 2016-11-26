@@ -29,10 +29,6 @@ def main():
 	nonmoney_reviews = df.loc[df['money_present'] == 0, 'text'].tolist()
 
 	TOP_WORDS = 1000
-	# TOP_WORDS = None
-	# MIN_DOC_FREQ = 0.005 # minimum document frequency of each word (0.0-1.0): so this only includes words present in at leat 0.5% of documents
-	# MAX_DOC_FREQ = 0.02 # maximum document frequency: 2%
-	# cols, comatrix = get_comatrix(reviews, TOP_WORDS, MIN_DOC_FREQ, MAX_DOC_FREQ)
 	cols, comatrix = get_comatrix(reviews, TOP_WORDS)
 	write_csv(cols, comatrix, edges_file)
 
@@ -55,7 +51,6 @@ def main():
 	write_csv(cols, comatrix, nonmoney_edges)
 
 def get_comatrix(reviews, TOP_WORDS=None, MIN_DOC_FREQ=1, MAX_DOC_FREQ=1.0):
-	# you could specify that you only want certain words with vocabulary={'word': 0}
 	count_model = CountVectorizer(ngram_range=(1,1), stop_words='english', max_features=TOP_WORDS, min_df=MIN_DOC_FREQ, max_df=MAX_DOC_FREQ) # default unigram model
 	X = count_model.fit_transform(reviews)
 	Xc = (X.T * X) # this is co-occurrence matrix in sparse csr format

@@ -2,17 +2,17 @@ library(texreg)
 
 setwd("/Users/katharina/Dropbox/Projects/Yelp Challenge/Output")
 
-controls1 = c("word_count")
-controls2 = c(controls1, "food_present", "service_present", "money_present")
-
 # Standardize independent variables
+standardize_vars = c("word_count", "food_present", "service_present", "money_present")
 df_std <- df
-for (var in c(controls1, controls2)) {
+for (var in standardize_vars) {
   m <- mean(df_std[, var], na.rm = T)
   s <- sd(df_std[, var], na.rm = T)
   df_std[, var] <- (df_std[, var] - m) / s
 }
 
+# Squared word count, after standardization
+# Can't square binary measures
 df_std$word_count_sq = df_std$word_count ** 2
 
 controls1 = c("word_count", "word_count_sq")
@@ -43,13 +43,12 @@ r_sq1
 coefs2 <- model2$coefficients
 predictions2 <- coefs2[1] + rowSums(as.matrix(df_std[test_rows, controls2]) %*% diag(coefs2[2:6]))
 residuals2 <- actual - predictions2
-## R^2 = (sum(residual^2)) / outcome variance
 r_sq2 = 1 - (sum(residuals2 ** 2) / sum((actual - actual_mean) ** 2))
 r_sq2
 
 
-## Model 1 has 0.0283 R-squared on test set, compared to 0.0 on training set
-## Model 2 has 0.0391 R-squared on test set, compared to 0.0399 on training set
+## Model 1 has 0.029 R-squared on test set, compared to 0.029 on training set
+## Model 2 has 0.036 R-squared on test set, compared to 0.037 on training set
 
 outfile <- "models.tex"
 texreg(list(model1, model2),
