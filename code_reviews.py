@@ -11,7 +11,7 @@ def categories(df):
     print 'going to code categories'
     print_time()
 
-    ethnicities = ['Mexican', 'Italian', 'American']
+    ethnicities = ['Mexican', 'Italian', 'American', 'Chinese']
     df['num_categories'] = 0
     for ethnicity in ethnicities:
         df.loc[df['categories'].str.contains(ethnicity, flags=re.I, na=False, case=False), 'category'] = ethnicity
